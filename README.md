@@ -140,11 +140,3 @@ Want to help expand the API, improve type inference, or add DataFrame visualizat
 ## 📬 Contact
 
 Tyler Maxwell – <a href="https://github.com/maxwellt23">GitHub</a>
-
-Let me know if you'd like:
-
-- Badges (SwiftPM, CI, license, etc.)
-- An example project linked in the repo
-- A logo/visual identity
-
-Would you like to push this as version `1.0.0` or continue evolving through Phase 3 first?
