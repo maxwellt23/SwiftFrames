@@ -122,7 +122,7 @@ Bob   | 25
 
 ## 📘 License
 
-MIT License
+<a href="LICENSE.md">MIT License</a>
 
 ## 👋 Contributing
 
