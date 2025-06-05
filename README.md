@@ -95,6 +95,8 @@ let csvString = df.toCSV()
 try df.toCSV(url: someLocalFileURL)
 ```
 
+---
+
 ## 📄 Output Example
 
 ```
@@ -104,12 +106,16 @@ Alice | 30
 Bob   | 25
 ```
 
+---
+
 ## 🛠 Under the Hood
 
 - Built with row-major storage for fast access by index
 - Uses Swift's Any? for flexible, type-safe representation
 - Type inference uses Bool, Int, Double parsing order
 - CustomStringConvertible provides clean table display
+
+---
 
 ## ✅ Phase 1 Completed Goals
 
@@ -120,14 +126,20 @@ Bob   | 25
 - Fully documented API
 - Sample tests and playground demo
 
+---
+
 ## 📘 License
 
 <a href="LICENSE.md">MIT License</a>
+
+---
 
 ## 👋 Contributing
 
 Want to help add filtering, sorting, grouping, or more Pandas-style APIs?
 Issues and PRs are welcome!
+
+---
 
 ## 🤝 Credits
 
