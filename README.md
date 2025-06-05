@@ -5,48 +5,52 @@ Easily read, explore, and manipulate structured tabular data—whether it's from
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-- Load CSV data from **local files** or **remote URLs**
-- Initialize from:
-  - Arrays of dictionaries (`[[String: Any?]]`)
-  - Arrays of arrays + column names
-  - Raw CSV string
-- Clean row and column access:
-  - `df[0]` → row as dictionary
-  - `df["age"]` → array of values in column
-- Print nicely formatted tables (like Python’s `pandas.DataFrame`)
-- `.shape`, `.head()`, `.tail()` inspection methods
-- Export data to CSV string or file
-- Handles missing values gracefully (`nil`)
-- Fully tested using Swift's new native testing framework
-- Includes a sample executable for demo purposes
+### ✅ Phase 1
+- Load CSV from **local or remote** file
+- Create `DataFrame` from:
+  - Array of Dictionaries (`[[String: Any?]]`)
+  - Array of Arrays with column names
+- Access:
+  - Rows via `df[0]`
+  - Columns via `df["columnName"]`
+- CSV Export
+  - `toCSV()` returns CSV `String`
+  - `toCSV(url:)` writes CSV to disk
+- Metadata:
+  - `.shape` returns (rows, columns)
+  - `.head(n)` and `.tail(n)` preview data
+- Pretty console printing like pandas
 
+### ✅ Phase 2
+- `.filter(_:)` – filter rows by condition
+- `.mapColumn(_:transform:)` – modify values in a column
+- `.select([columns])` – create new `DataFrame` with specific columns
+- `.dropna()` – remove rows with any `nil`
+- `.fillna(value:)` – fill missing values with a default
+  
 ---
 
 ## 📦 Installation
 
-Add to your `Package.swift`:
+Using Swift Package Manager:
 
 ```swift
-.package(url: "https://github.com/your-username/SwiftFrames.git", from: "1.0.0")
+dependencies: [
+  .package(url: "https://github.com/maxwellt23/SwiftFrames.git", from: "1.0.0")
+]
 ```
 
-And include the dependency:
-
-```swift
-.target(name: "MyApp", dependencies: ["SwiftFrames"])
-```
-
----
-
-## 🧪 Getting Started
-
-Import the library:
+Import it in your Swift code:
 
 ```swift
 import SwiftFrames
 ```
+
+---
+
+## 🚀 Usage
 
 Load from CSV (local or remote)
 
@@ -78,52 +82,47 @@ let df = DataFrame(
 )
 ```
 
-Inspect the data
+Inspect and access
 
 ```swift
+print(df)              // Formatted DataFrame
 print(df.shape)        // (2, 2)
-print(df.head(1))      // First row
-print(df["name"])      // Optional array of names
+print(df.head(2))      // First 2 rows
+print(df["name"])      // Column values
 ```
 
-Export to CSV
+Modify
 
 ```swift
-let csvString = df.toCSV()
+let filtered = df.filter { $0["score"] as? Int ?? 0 > 90 }
+var updated = df
+updated.mapColumn("score") { ($0 as? Int).map { $0 + 5 } }
+```
+
+Clean missing data
+
+```swift
+let clean = df.dropna()
+let filled = df.fillna("Unknown")
+```
+
+Export
+
+```swift
 try df.toCSV(url: someLocalFileURL)
 ```
 
 ---
 
-## 📄 Output Example
+## 🛣️ Roadmap
 
-```
-name  | age
--------------
-Alice | 30
-Bob   | 25
-```
-
----
-
-## 🛠 Under the Hood
-
-- Built with row-major storage for fast access by index
-- Uses Swift's Any? for flexible, type-safe representation
-- Type inference uses Bool, Int, Double parsing order
-- CustomStringConvertible provides clean table display
-
----
-
-## ✅ Phase 1 Completed Goals
-
-- CSV import/export (local + remote)
-- Flexible initialization formats
-- Missing value support
-- Typed column access
-- Fully documented API
-- Sample tests and playground demo
-
+Phase 3 (Upcoming)
+- GroupBy & aggregation
+- Sorting
+- Type-safe column access improvements
+- JSON import/export
+- DataFrame merging & joins
+  
 ---
 
 ## 📘 License
@@ -134,11 +133,18 @@ Bob   | 25
 
 ## 👋 Contributing
 
-Want to help add filtering, sorting, grouping, or more Pandas-style APIs?
-Issues and PRs are welcome!
+Want to help expand the API, improve type inference, or add DataFrame visualizations? Contributions are welcome!
 
 ---
 
-## 🤝 Credits
+## 📬 Contact
 
-Created by <a href="https://github.com/maxwellt23">Tyler Maxwell</a>
+Tyler Maxwell – <a href="https://github.com/maxwellt23">GitHub</a>
+
+Let me know if you'd like:
+
+- Badges (SwiftPM, CI, license, etc.)
+- An example project linked in the repo
+- A logo/visual identity
+
+Would you like to push this as version `1.0.0` or continue evolving through Phase 3 first?
