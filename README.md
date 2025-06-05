@@ -12,17 +12,15 @@ Easily read, explore, and manipulate structured tabular data—whether it's from
   - Arrays of dictionaries (`[[String: Any?]]`)
   - Arrays of arrays + column names
   - Raw CSV string
-- Automatic type inference (`Bool`, `Int`, `Double`, `String`)
 - Clean row and column access:
   - `df[0]` → row as dictionary
   - `df["age"]` → array of values in column
-  - `df.column(named: "score", as: Int.self)`
 - Print nicely formatted tables (like Python’s `pandas.DataFrame`)
 - `.shape`, `.head()`, `.tail()` inspection methods
 - Export data to CSV string or file
 - Handles missing values gracefully (`nil`)
 - Fully tested using Swift's new native testing framework
-- Includes a sample playground
+- Includes a sample executable for demo purposes
 
 ---
 
