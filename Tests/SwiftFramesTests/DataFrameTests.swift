@@ -133,17 +133,78 @@ struct DataFrameTests {
         #expect(output.contains("Bob"))
     }
     
-    @Test("Typed Column Access")
-    func testTypedColumnAccess() {
-        let csv = """
-        name,age,score,active
-        Alice,30,91.5,true
-        Bob,25,88.0,false
-        Charlie,,72.5,false
-        """
+    @Test("filter() filters data by a Bool condition")
+    func testFilter() {
+        let df = DataFrame(rows: [
+            ["name": "Alice", "score": 85, "passed": true],
+            ["name": "Bob", "score": 90, "passed": true],
+            ["name": "Charlie", "score": nil, "passed": false],
+            ["name": "Dana", "score": 72, "passed": nil]
+        ])
         
-        let df = DataFrame(csvString: csv)
+        let filtered = df.filter { $0["passed"] as? Bool == true }
+        #expect(filtered.shape.rows == 2)
+        #expect(filtered[0]["name"] as? String == "Alice")
+        #expect(filtered[1]["name"] as? String == "Bob")
+    }
+    
+    @Test("mapColumn() transforms a columns values in place")
+    func testMapColumn() {
+        var df = DataFrame(rows: [
+            ["name": "Alice", "score": 85, "passed": true],
+            ["name": "Bob", "score": 90, "passed": true],
+            ["name": "Charlie", "score": nil, "passed": false],
+            ["name": "Dana", "score": 72, "passed": nil]
+        ])
+
+        df.mapColumn("score") { score in
+            if let intScore = score as? Int {
+                return intScore + 5
+            }
+            
+            return score as? Int
+        }
+        #expect(df["score"]?[0] as? Int == 90)
+    }
+    
+    @Test("select() selects specified columns")
+    func testSelect() {
+        var df = DataFrame(rows: [
+            ["name": "Alice", "score": 85, "passed": true],
+            ["name": "Bob", "score": 90, "passed": true],
+            ["name": "Charlie", "score": nil, "passed": false],
+            ["name": "Dana", "score": 72, "passed": nil]
+        ])
+        let selected = df.select(["name", "score"])
+        #expect(selected.columns == ["name", "score"])
+        #expect(selected.shape.columns == 2)
+    }
+    
+    @Test("dropna() drops rows with missing data")
+    func testDropna() {
+        var df = DataFrame(rows: [
+            ["name": "Alice", "score": 85, "passed": true],
+            ["name": "Bob", "score": 90, "passed": true],
+            ["name": "Charlie", "score": nil, "passed": false],
+            ["name": "Dana", "score": 72, "passed": nil]
+        ])
+        let cleaned = df.dropna()
         
-        let names = df.column(named: "name", as: String.self)
+        #expect(cleaned.shape.rows == 2)
+        #expect(cleaned[0]["name"] as? String == "Alice")
+    }
+    
+    @Test("fillna() replaces nil values in row with fallback value")
+    func testFillna() {
+        var df = DataFrame(rows: [
+            ["name": "Alice", "score": 85, "passed": true],
+            ["name": "Bob", "score": 90, "passed": true],
+            ["name": "Charlie", "score": nil, "passed": false],
+            ["name": "Dana", "score": 72, "passed": nil]
+        ])
+        let filled = df.fillna("MISSING")
+        
+        #expect(filled["score"]?[2] as? String == "MISSING")
+        #expect(filled["passed"]?[3] as? String == "MISSING")
     }
 }

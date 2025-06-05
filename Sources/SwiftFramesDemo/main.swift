@@ -120,6 +120,41 @@ struct SwiftFramesDemo {
         } catch {
             print("Error writing CSV to file: \(error)\n")
         }
+        
+        // MARK: - 12. .filter()
+        
+        let df = DataFrame(rows: [
+            ["name": "Alice", "score": 85, "passed": true],
+            ["name": "Bob", "score": 90, "passed": true],
+            ["name": "Charlie", "score": nil, "passed": false],
+            ["name": "Dana", "score": 72, "passed": nil]
+        ])
+        
+        print("ORIGINAL DATAFRAME\n\(df)\n")
+        
+        let filtered = df.filter { $0["passed"] as? Bool == true }
+        print("Filtered (passed == true)\n\(filtered)\n")
+        
+        // MARK: - 13. .mapColumn()
+        
+        var mappedDF = df
+        mappedDF.mapColumn("score") { ($0 as? Int).map { $0 + 10 } }
+        print("Mapped (score + 10)\n\(mappedDF)\n")
+        
+        // MARK: - 14. .select()
+        
+        let selected = df.select(["name", "passed"])
+        print("Selected Columns (name, passed)\n\(selected)\n")
+        
+        // MARK: - 15. .dropna()
+        
+        let dropped = df.dropna()
+        print("Dropped NA's\n\(dropped)\n")
+        
+        // MARK: - 16. .fillna()
+        
+        let filled = df.fillna("?")
+        print("Filled NA's with '?'\n\(filled)\n")
     }
 }
 

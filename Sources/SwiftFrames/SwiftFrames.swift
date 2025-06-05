@@ -36,24 +36,3 @@ public struct SwiftFrames {
         return DataFrame(csvString: csvString)
     }
 }
-
-/// Attempts to infer the most appropriate Swift type for a given CSV string value.
-///
-/// The following inference order is used:
-/// 1. Empty or whitespace-only string → `nil`
-/// 2. Case-insensitive match for "true"/"false" → `Bool`
-/// 3. Integer representation → `Int`
-/// 4. Floating-point representation → `Double`
-/// 5. All others → `String`
-///
-/// - Parameter string: The raw string value from the CSV.
-/// - Returns: A strongly typed Swift value, or `nil` for blank cells.
-internal func inferValueType(_ string: String) -> Any? {
-    let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
-    if trimmed.isEmpty { return nil }
-
-    if let bool = Bool(trimmed.lowercased()) { return bool }
-    if let int = Int(trimmed) { return int }
-    if let double = Double(trimmed) { return double }
-    return trimmed
-}

@@ -67,6 +67,60 @@ public struct DataFrame {
         }
         return result
     }
+    
+    /// Returns a new DataFrame containing only rows for which the predicate returns true.
+    /// - Parameter predicate: A closure that takes a row dictionary and returns a Bool.
+    /// - Returns: A new filtered DataFrame.
+    public func filter(_ predicate: ([String: Any?]) -> Bool) -> DataFrame {
+        let filteredRows = data.enumerated().compactMap { index, row in
+            let rowDict = Dictionary(uniqueKeysWithValues: zip(columns, row))
+            return predicate(rowDict) ? row : nil
+        }
+        
+        return DataFrame(columns: columns, rows: filteredRows)
+    }
+    
+    /// Mutates the DataFrame by applying a transformation to all values in the specified column.
+    /// - Parameters:
+    ///   - column: The name of the column to transform.
+    ///   - transform: A closure that maps an existing value to a new one.
+    public mutating func mapColumn<T>(_ column: String, _ transform: (Any?) -> T?) {
+        guard let colIndex = columns.firstIndex(of: column) else { return }
+        for rowIndex in 0..<data.count {
+            let originalValue = data[rowIndex][colIndex]
+            data[rowIndex][colIndex] = transform(originalValue)
+        }
+    }
+    
+    /// Returns a new DataFrame with only the specified subset of columns.
+    /// - Parameter columnNames: The list of column names to keep.
+    /// - Returns: A new DataFrame with only selected columns.
+    public func select(_ selectedColumns: [String]) -> DataFrame {
+        let indices = selectedColumns.compactMap { columns.firstIndex(of: $0) }
+        let selectedData = data.map { row in
+            indices.map { row[$0] }
+        }
+        return DataFrame(columns: selectedColumns, rows: selectedData)
+    }
+    
+    /// Returns a new DataFrame with all rows containing nil values removed.
+    /// - Returns: A cleaned DataFrame without incomplete rows.
+    public func dropna() -> DataFrame {
+        let cleanedData = data.filter { row in
+            !row.contains(where: { $0 == nil })
+        }
+        return DataFrame(columns: columns, rows: cleanedData)
+    }
+    
+    /// Returns a new DataFrame where all nil values are replaced with a specified value.
+    /// - Parameter value: The replacement value to use in place of nil.
+    /// - Returns: A DataFrame with no nil values.
+    public func fillna(_ value: Any) -> DataFrame {
+        let filledData = data.map { row in
+            row.map { $0 ?? value }
+        }
+        return DataFrame(columns: columns, rows: filledData)
+    }
 }
 
 public extension DataFrame {
@@ -88,21 +142,11 @@ public extension DataFrame {
     ///
     /// - Parameter csvString: A string in CSV format.
     init(csvString: String) {
-        let rows = csvString.components(separatedBy: .newlines).filter { !$0.isEmpty }
-        let headers = rows[0].components(separatedBy: ",")
-        let dataRows = rows.dropFirst()
-        
-        let parsedRows: [[String: Any?]] = dataRows.map { line in
-            let values = line.components(separatedBy: ",")
-            var row = [String: Any?]()
-            for (i, header) in headers.enumerated() {
-                let raw = 1 < values.count ? values[i] : ""
-                row[header] = inferValueType(raw)
-            }
-            return row
+        let lines = csvString.components(separatedBy: .newlines).filter { !$0.isEmpty }
+        self.columns = lines.first!.components(separatedBy: ",")
+        self.data = lines.dropFirst().map { line in
+            line.components(separatedBy: ",").map { $0.isEmpty ? nil : $0 }
         }
-        
-        self.init(rows: parsedRows)
     }
     
     /// Accesses a row by index and returns it as a `[column: value]` dictionary.
